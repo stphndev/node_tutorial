@@ -2,13 +2,20 @@ import fs from 'node:fs/promises'
 import http from 'node:http'
 import open from 'open'
 
-const interpolate = (html, data) => {
+interface Note {
+  id: number;
+  content: string;
+  tags: string[];
+}
+
+
+const interpolate = (html: string, data: { [x: string]: any; notes?: string; }) => {
   return html.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, placeholder) => {
     return data[placeholder] || '';
   });
 }
 
-const formatNotes = (notes) => {
+const formatNotes = (notes: Note[]) => {
   return notes.map(note => {
     return `
       <div class="note">
@@ -21,7 +28,7 @@ const formatNotes = (notes) => {
   }).join('\n')
 }
 
-const createServer = (notes) => {
+const createServer = (notes: Note[]) => {
   return http.createServer(async (req, res) => {
     const HTML_PATH = new URL('./template.html', import.meta.url)
     const template = await fs.readFile(HTML_PATH, 'utf-8')
@@ -32,7 +39,7 @@ const createServer = (notes) => {
   });
 }
 
-export const start = (notes, port) => {
+export const start = (notes: Note[], port: number) => {
   const server = createServer(notes)
   server.listen(port, () => {
     console.log(`Server is listening on port ${port}`);

@@ -2,6 +2,16 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+interface Note {
+  tags: string[];
+  content: string;
+  id: number;
+}
+
+interface Database {
+  notes: Note[];
+}
+
 const DB_FILE_NAME = 'db.json';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,7 +29,7 @@ export const getDB = async () => {
   }
 };
 
-export const saveDB = async (db) => {
+export const saveDB = async (db: Database) => {
   try {
     await fs.writeFile(DB_PATH, JSON.stringify(db, null, 2));
     return db;
@@ -28,7 +38,7 @@ export const saveDB = async (db) => {
   }
 };
 
-export const insert = async (data) => {
+export const insert = async (data: Note) => {
   try {
     const db = await getDB();
     db.notes.push(data);

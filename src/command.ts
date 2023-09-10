@@ -1,9 +1,29 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import {newNote, getAllNotes, findNotes, removeNote, removeAllNotes} from './notes.js'
+import {newNote, getAllNotes, findNotes, removeNote, removeAllNotes} from './notes.ts'
 import { start } from './server.js'
 
-const listNotes = (notes) => {
+interface Note {
+  id: number;
+  content: string;
+  tags: string[];
+}
+
+interface NewNoteArgs {
+  note: string;
+  tags?: string;
+}
+
+interface FindNotesArgs {
+  filter: string;
+}
+
+interface RemoveNoteArgs {
+  id: number;
+}
+
+
+const listNotes = (notes: Note[]) => {
   notes.forEach(note => {
     console.log('\n')
     console.log('id: ', note.id)
@@ -13,7 +33,7 @@ const listNotes = (notes) => {
 }
 
 yargs(hideBin(process.argv))
-  .command('new <note>', 'create a new note', yargs => {
+  .command<NewNoteArgs>('new <note>', 'create a new note', yargs => {
     return yargs.positional('note', {
       describe: 'The content of the note you want to create',
       type: 'string'
@@ -32,7 +52,7 @@ yargs(hideBin(process.argv))
     const notes = await getAllNotes()
     listNotes(notes)
   })
-  .command('find <filter>', 'get matching notes', yargs => {
+  .command<FindNotesArgs>('find <filter>', 'get matching notes', yargs => {
     return yargs.positional('filter', {
       describe: 'The search term to filter notes by, will be applied to note.content',
       type: 'string'
@@ -41,7 +61,7 @@ yargs(hideBin(process.argv))
     const notes = await findNotes(argv.filter)
     listNotes(notes)
   })
-  .command('remove <id>', 'remove a note by id', yargs => {
+  .command<RemoveNoteArgs>('remove <id>', 'remove a note by id', yargs => {
     return yargs.positional('id', {
       type: 'number',
       description: 'The id of the note you want to remove'
