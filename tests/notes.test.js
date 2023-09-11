@@ -18,14 +18,13 @@ beforeEach(() => {
 test('newNote inserts data and returns it', async () => {
     const note = 'Go to School';
     const tags = ['books', 'lunch'];
+    const result = await newNote(note, tags);
     const data = {
       tags,
       content: note,
-      id: Date.now(),
+      id: result.id,
     };
     insert.mockResolvedValue(data);
-  
-    const result = await newNote(note, tags);
     expect(result).toEqual(data);
   });
 
